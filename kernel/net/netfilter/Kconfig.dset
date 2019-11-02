@@ -1,0 +1,22 @@
+menu "Core Netfilter Configuration"
+	depends on NET && INET && NETFILTER
+
+if NETFILTER_XTABLES
+
+config NETFILTER_XT_DSET
+	tristate 'dset match support'
+	depends on DOMAIN_SET
+	depends on NETFILTER_ADVANCED
+	help
+	  This option adds the "dset" match.
+
+	  Using this target and match, you can add/delete and match
+	  elements in the sets created by dset(8).
+
+	  To compile it as a module, choose M here.  If unsure, say N.
+
+endif # NETFILTER_XTABLES
+
+endmenu
+
+source "net/netfilter/dset/Kconfig"

@@ -1,0 +1,350 @@
+.\" Man page written by Bin Cheng <cbdog94@gmail.com>
+.\" 
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\" 
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\" 
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH "DSET" "8" "Nov 1, 2019" "Bin Cheng" ""
+.SH "NAME"
+dset \(em administration tool for domain sets
+.SH "SYNOPSIS"
+\fBdset\fR [ \fIOPTIONS\fR ] \fICOMMAND\fR [ \fICOMMAND\-OPTIONS\fR ]
+.PP
+COMMANDS := { \fBcreate\fR | \fBadd\fR | \fBdel\fR | \fBtest\fR | \fBdestroy\fR | \fBlist\fR | \fBsave\fR | \fBrestore\fR | \fBflush\fR | \fBrename\fR | \fBswap\fR | \fBhelp\fR | \fBversion\fR | \fB\-\fR }
+.PP
+\fIOPTIONS\fR := { \fB\-exist\fR | \fB\-output\fR { \fBplain\fR | \fBsave\fR | \fBxml\fR } | \fB\-quiet\fR | \fB\-sorted\fR | \fB\-name\fR | \fB\-terse\fR | \fB\-file\fR \fIfilename\fR }
+.PP
+\fBdset\fR \fBcreate\fR \fISETNAME\fR \fITYPENAME\fR [ \fICREATE\-OPTIONS\fR ]
+.PP
+\fBdset\fR \fBadd\fR \fISETNAME\fR \fIADD\-ENTRY\fR [ \fIADD\-OPTIONS\fR ]
+.PP
+\fBdset\fR \fBdel\fR \fISETNAME\fR \fIDEL\-ENTRY\fR [ \fIDEL\-OPTIONS\fR ]
+.PP
+\fBdset\fR \fBtest\fR \fISETNAME\fR \fITEST\-ENTRY\fR [ \fITEST\-OPTIONS\fR ]
+.PP
+\fBdset\fR \fBdestroy\fR [ \fISETNAME\fR ]
+.PP
+\fBdset\fR \fBlist\fR [ \fISETNAME\fR ]
+.PP
+\fBdset\fR \fBsave\fR [ \fISETNAME\fR ]
+.PP
+\fBdset\fR \fBrestore\fR
+.PP
+\fBdset\fR \fBflush\fR [ \fISETNAME\fR ]
+.PP
+\fBdset\fR \fBrename\fR \fISETNAME\-FROM\fR \fISETNAME\-TO\fR
+.PP
+\fBdset\fR \fBswap\fR \fISETNAME\-FROM\fR \fISETNAME\-TO\fR
+.PP
+\fBdset\fR \fBhelp\fR [ \fITYPENAME\fR ]
+.PP
+\fBdset\fR \fBversion\fR
+.PP
+\fBdset\fR \fB\-\fR
+.SH "DESCRIPTION"
+\fBdset\fR
+is used to set up, maintain and inspect so called domain sets in the Linux
+kernel. An domain set can store basic domain now. See the set type definitions below.
+.PP
+\fBEbtables\fR
+matches referring to sets create references, which
+protect the given sets in the kernel. A set cannot be destroyed
+while there is a single reference pointing to it.
+.SH "OPTIONS"
+The options that are recognized by
+\fBdset\fR
+can be divided into several different groups.
+.SS COMMANDS
+These options specify the desired action to perform.  Only one of them
+can be specified on the command line unless otherwise specified below.
+For all the long versions of the command names, you need to use only enough
+letters to ensure that
+\fBdset\fR
+can differentiate it from all other commands. The
+\fBdset\fR
+parser follows the order here when looking for the shortest match
+in the long command names.
+.TP 
+\fBn\fP, \fBcreate\fP \fISETNAME\fP \fITYPENAME\fP [ \fICREATE\-OPTIONS\fP ]
+Create a set identified with setname and specified type. The type may require
+type specific options. If the
+\fB\-exist\fR
+option is specified,
+\fBdset\fR
+ignores the error otherwise raised when the same set (setname and create parameters
+are identical) already exists.
+.TP 
+\fBadd\fP \fISETNAME\fP \fIADD\-ENTRY\fP [ \fIADD\-OPTIONS\fP ]
+Add a given entry to the set. If the
+\fB\-exist\fR
+option is specified,
+\fBdset\fR
+ignores if the entry already added to the set.
+.TP 
+\fBdel\fP \fISETNAME\fP \fIDEL\-ENTRY\fP [ \fIDEL\-OPTIONS\fP ]
+Delete an entry from a set. If the
+\fB\-exist\fR
+option is specified and the entry is not in the set (maybe already expired),
+then the command is ignored.
+.TP 
+\fBtest\fP \fISETNAME\fP \fITEST\-ENTRY\fP [ \fITEST\-OPTIONS\fP ]
+Test whether an entry is in a set or not. Exit status number is zero
+if the tested entry is in the set and nonzero if it is missing from
+the set.
+.TP 
+\fBx\fP, \fBdestroy\fP [ \fISETNAME\fP ]
+Destroy the specified set or all the sets if none is given.
+
+If the set has got reference(s), nothing is done and no set destroyed.
+.TP 
+\fBlist\fP [ \fISETNAME\fP ] [ \fIOPTIONS\fP ]
+List the header data and the entries for the specified set, or for
+all sets if none is given. When the
+\fB\-sorted\fP
+option is given, the entries are listed/saved sorted (which may be slow).
+The option
+\fB\-output\fR
+can be used to control the format of the listing:
+\fBplain\fR, \fBsave\fR or \fBxml\fR.
+(The default is
+\fBplain\fR.)
+If the option
+\fB\-name\fR
+is specified, just the names of the existing sets are listed. If the option
+\fB\-terse\fR
+is specified, just the set names and headers are listed. The output is printed
+to stdout, the option
+\fB\-file\fR
+can be used to specify a filename instead of stdout.
+.TP 
+\fBsave\fP [ \fISETNAME\fP ]
+Save the given set, or all sets if none is given
+to stdout in a format that
+\fBrestore\fP
+can read. The option
+\fB\-file\fR
+can be used to specify a filename instead of stdout.
+.TP 
+\fBrestore\fP
+Restore a saved session generated by
+\fBsave\fP.
+The saved session can be fed from stdin or the option
+\fB\-file\fR
+can be used to specify a filename instead of stdin.
+
+Please note, existing sets and elements are not erased by
+\fBrestore\fP unless specified so in the restore file. All commands
+are allowed in restore mode except \fBlist\fP, \fBhelp\fP,
+\fBversion\fP, interactive mode and \fBrestore\fP itself.
+.TP 
+\fBflush\fP [ \fISETNAME\fP ]
+Flush all entries from the specified set or flush
+all sets if none is given.
+.TP 
+\fBe\fP, \fBrename\fP \fISETNAME\-FROM\fP \fISETNAME\-TO\fP
+Rename a set. Set identified by
+\fISETNAME\-TO\fR
+must not exist.
+.TP 
+\fBw\fP, \fBswap\fP \fISETNAME\-FROM\fP \fISETNAME\-TO\fP
+Swap the content of two sets, or in another words, 
+exchange the name of two sets. The referred sets must exist and
+compatible type of sets can be swapped only.
+.TP 
+\fBhelp\fP [ \fITYPENAME\fP ]
+Print help and set type specific help if
+\fITYPENAME\fR
+is specified.
+.TP 
+\fBversion\fP
+Print program version.
+.TP 
+\fB\-\fP
+If a dash is specified as command, then
+\fBdset\fR
+enters a simple interactive mode and the commands are read from the standard input.
+The interactive mode can be finished by entering the pseudo\-command
+\fBquit\fR.
+.P
+.SS "OTHER OPTIONS"
+The following additional options can be specified. The long option names
+cannot be abbreviated.
+.TP 
+\fB\-!\fP, \fB\-exist\fP
+Ignore errors when exactly the same set is to be created or already
+added entry is added or missing entry is deleted.
+.TP 
+\fB\-o\fP, \fB\-output\fP { \fBplain\fR | \fBsave\fR | \fBxml\fR }
+Select the output format to the
+\fBlist\fR
+command.
+.TP 
+\fB\-q\fP, \fB\-quiet\fP
+Suppress any output to stdout and stderr.
+\fBdset\fR
+will still exit with error if it cannot continue.
+.TP 
+\fB\-s\fP, \fB\-sorted\fP
+Sorted output. When listing or saving sets, the entries are listed sorted.
+.TP 
+\fB\-n\fP, \fB\-name\fP
+List just the names of the existing sets, i.e. suppress listing of set headers and members.
+.TP 
+\fB\-t\fP, \fB\-terse\fP
+List the set names and headers, i.e. suppress listing of set members.
+.TP 
+\fB\-f\fP, \fB\-file\fP \fIfilename\fR
+Specify a filename to print into instead of stdout
+(\fBlist\fR
+or
+\fBsave\fR
+commands) or read from instead of stdin
+(\fBrestore\fR
+command).
+.SH "INTRODUCTION"
+A set type comprises of the storage method by which the data is stored and
+the data type(s) which are stored in the set. Therefore the
+\fITYPENAME\fR
+parameter of the
+\fBcreate\fR 
+command follows the syntax
+
+\fITYPENAME\fR := \fImethod\fR\fB:\fR\fIdatatype\fR[\fB,\fR\fIdatatype\fR[\fB,\fR\fIdatatype\fR]]
+
+where the current list of the method is \fBhash\fR 
+and the possible data type is \fBdomain\fR.
+
+The \fBhash\fR
+types use a hash to store the elements. In order to avoid clashes in the hash,
+a limited number of chaining, and if that is exhausted, the doubling of the hash size
+is performed when adding entries by the
+\fBdset\fR
+command. 
+.SH "GENERIC CREATE AND ADD OPTIONS"
+.SS timeout
+All set types supports the optional \fBtimeout\fR
+parameter when creating a set and adding entries. The value of the \fBtimeout\fR
+parameter for the \fBcreate\fR command means the default timeout value (in seconds)
+for new entries. If a set is created with timeout support, then the same 
+\fBtimeout\fR option can be used to specify non\-default timeout values
+when adding entries. Zero timeout value means the entry is added permanent to the set.
+The timeout value of already added elements can be changed by re-adding the element
+using the \fB\-exist\fR option. The largest possible timeout value is 2147483
+(in seconds). Example:
+.IP
+dset create test hash:domain timeout 300
+.IP
+dset add test google.com timeout 60
+.IP
+dset \-exist add test google.com timeout 600
+.PP
+When listing the set, the number of entries printed in the header might be
+larger than the listed number of entries for sets with the timeout extensions:
+the number of entries in the set is updated when elements added/deleted to the
+set and periodically when the garbage collector evicts the timed out entries.
+.PP
+.SS "counters, packets, bytes"
+All set types support the optional \fBcounters\fR
+option when creating a set. If the option is specified then the set is created
+with packet and byte counters per element support. The packet and byte counters
+are initialized to zero when the elements are (re\-)added to the set,
+unless the packet and byte counter values are explicitly specified by the
+\fBpackets\fR and \fBbytes\fR options. An example when an element is added
+to a set with non\-zero counter values:
+.IP 
+dset create foo hash:domain counters
+.IP 
+dset add foo google.com packets 42 bytes 1024
+.PP
+.SS comment
+All set types support the optional \fBcomment\fR extension.
+Enabling this extension on an dset enables you to annotate an dset entry with
+an arbitrary string. This string is completely ignored by both the kernel and dset
+itself and is purely for providing a convenient means to document the reason for an
+entry's existence. Comments must not contain any quotation marks and the usual escape
+character (\\) has no meaning. For example, the following shell command is illegal:
+.IP
+dset add foo google.com comment "this comment is \\"bad\\""
+.PP
+In the above, your shell will of course escape the quotation marks and dset will see
+the quote marks in the argument for the comment, which will result in a parse error.
+If you are writing your own system, you should avoid creating comments containing a
+quotation mark if you do not want to break "dset save" and "dset restore",
+nonetheless, the kernel will not stop you from doing so. The following is perfectly
+acceptable:
+.IP
+dset create foo hash:domain comment
+.IP
+dset add foo google.com comment "allow access to SMB share on \\\\\\\\fileserv\\\\"
+.IP
+the above would appear as: "allow access to SMB share on \\\\fileserv\\"
+.PP
+.SS hashsize
+This parameter is valid for the \fBcreate\fR command of all \fBhash\fR type sets.
+It defines the initial hash size for the set, default is 1024. The hash size must be a power
+of two, the kernel automatically rounds up non power of two hash sizes to the first
+correct value.
+Example:
+.IP
+dset create test hash:domain hashsize 1536
+.PP
+.SS maxelem
+This parameter is valid for the \fBcreate\fR command of all \fBhash\fR type sets.
+It does define the maximal number of elements which can be stored in the set, default 65536.
+Example:
+.IP
+dset create test hash:domain maxelem 2048.
+.SS forceadd
+All hash set types support the optional \fBforceadd\fR parameter when creating a set.
+When sets created with this option become full the next addition to the set may
+succeed and evict a random entry from the set.
+.IP
+dset create foo hash:domain forceadd
+.PP
+.SH "SET TYPES"
+.SS hash:domain
+The \fBhash:domain\fR set type uses a hash to store domain name. Zero valued domain name cannot be stored in a \fBhash:domain\fR
+type of set.
+.PP
+\fICREATE\-OPTIONS\fR := [ \fBhashsize\fR \fIvalue\fR ] [ \fBmaxelem\fR \fIvalue\fR ] [ \fBtimeout\fR \fIvalue\fR ] [ \fBcounters\fP ] [ \fBcomment\fP ]
+.PP
+\fIADD\-ENTRY\fR := \fIdomain\fR
+.PP
+\fIADD\-OPTIONS\fR := [ \fBtimeout\fR \fIvalue\fR ] [ \fBpackets\fR \fIvalue\fR ] [ \fBbytes\fR \fIvalue\fR ] [ \fBcomment\fR \fIstring\fR ]
+.PP
+\fIDEL\-ENTRY\fR := \fIdomain\fR
+.PP
+\fITEST\-ENTRY\fR := \fIdomain\fR
+.PP
+Examples:
+.IP 
+dset create foo hash:domain
+.IP 
+dset add foo google.com
+.IP 
+dset test foo google.com
+.SH "GENERAL RESTRICTIONS"
+Zero valued set entries cannot be used with hash methods. Zero protocol value with ports
+cannot be used
+.SH "DIAGNOSTICS"
+Various error messages are printed to standard error.  The exit code
+is 0 for correct functioning.
+.SH "SEE ALSO"
+\fBebtables\fR(8),
+\fBiptables\fR(8),
+\fBip6tables\fR(8)
+\fBiptables-extensions\fR(8)
+.SH "AUTHORS"
+Bin Cheng wrote dset, which is based on ipset by
+Jozsef Kadlecsik.
+.SH "LAST REMARK"
+\fBI stand on the shoulders of giants.\fR

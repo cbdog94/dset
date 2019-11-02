@@ -1,0 +1,10 @@
+NOSTDINC_FLAGS += -I$(KDIR)/include
+EXTRA_CFLAGS := -DDOMAIN_SET_MAX=$(DOMAIN_SET_MAX)
+
+domain_set-y := domain_set_core.o
+obj-m += domain_set.o
+obj-m += domain_set_hash_domain.o
+
+# It's for me...
+incdirs := $(M)
+clean-files := $(foreach dir,$(incdirs),$(wildcard $(dir)/*~))

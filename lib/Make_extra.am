@@ -1,0 +1,101 @@
+DSET_MODSDIR=${libdir}/dset
+
+if ENABLE_SETTYPE_MODULES
+AM_CFLAGS += -DENABLE_SETTYPE_MODULES \
+	         -DDSET_MODSDIR="\"$(DSET_MODSDIR)\""
+DSET_SETTYPE_MODULES = yes
+DSET_SETTYPE_DYN = $(if $(findstring all,$(SETTYPE_MODLIST)), \
+	                           $(DSET_SETTYPE_LIST), $(SETTYPE_MODLIST))
+else
+DSET_SETTYPE_DYN =
+endif
+
+DSET_SETTYPE_STATIC = $(filter-out $(DSET_SETTYPE_DYN), \
+	                     $(DSET_SETTYPE_LIST))
+DSET_SETTYPE_DYNAMIC = $(filter $(DSET_SETTYPE_LIST), \
+	                     $(DSET_SETTYPE_DYN))
+DSET_SETTYPE_STATIC_OBJECTS  = $(patsubst %.c, %.lo, $(DSET_SETTYPE_STATIC))
+
+DSET_SETTYPE_DYNAMIC_OBJECTS = $(patsubst %.c, %.lo, $(DSET_SETTYPE_DYNAMIC))
+DSET_SETTYPE_DYNAMIC_MODULES = $(patsubst %.c, %.la, $(DSET_SETTYPE_DYNAMIC))
+DSET_SETTYPE_DYNAMIC_LTFLAGS = -shared -module -avoid-version
+DSET_SETTYPE_ALL_MODULES = $(patsubst %.c, %.la, $(DSET_SETTYPE_STATIC)) \
+	$(DSET_SETTYPE_DYNAMIC_MODULES)
+
+BUILT_SOURCES = dset_settype_check types_init.c dset_settype_modules
+CLEANFILES = dset_settype_check types_init.c $(DSET_SETTYPE_ALL_MODULES)
+
+dset_%.lo: dset_%.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`; \
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -D_INIT=dset_$*_init \
+		$(if $(findstring dset_$*.c,$(DSET_SETTYPE_STATIC)), -DTYPE_INCLUSIVE,)\
+		-MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< && \
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -D_INIT=dset_$*_init \
+		$(if $(findstring dset_$*.c,$(DSET_SETTYPE_STATIC)), -DTYPE_INCLUSIVE,)\
+		-c -o $@ $<
+
+dset_%.la: $(lib_LTLIBRARIES) dset_%.lo
+	$(AM_V_CCLD)lobj="$(patsubst %.la, %.lo, $@)"; \
+	$(LIBTOOL) --silent --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+		$(CFLAGS) $(DSET_SETTYPE_DYNAMIC_LTFLAGS) $(LDFLAGS) -o $@ \
+		-rpath $(DSET_MODSDIR) $$lobj $(LIBS) $(top_builddir)/lib/libdset.la
+
+types_init.c: $(DSET_SETTYPE_STATIC_OBJECTS)
+	$(AM_V_GEN)static_list=`echo $(patsubst %.c,%,$(DSET_SETTYPE_STATIC))`; \
+	echo -n "" > $@; \
+	for i in $$static_list; do \
+		echo "extern void $${i}_init(void);" >> $@; \
+	done; \
+	echo "void dset_types_init(void);" >> $@; \
+	echo "void dset_types_init(void)" >> $@; \
+	echo "{" >> $@; \
+	for i in $$static_list; do \
+		echo "	""$${i}_init();" >> $@; \
+	done; \
+	echo "}" >> $@;
+
+dset_settype_check:
+	@list="$(DSET_SETTYPE_MODULES) $(DSET_SETTYPE_STATIC_OBJECTS)"; \
+	test -f $@ || echo "$$list" > $@; \
+	if test "$$list" != "`cat $@`"; then \
+		$(MAKE) clean; \
+		echo "$$list" > $@; \
+	fi
+
+dset_settype_modules: $(lib_LTLIBRARIES) $(DSET_SETTYPE_DYNAMIC_OBJECTS) \
+	$(DSET_SETTYPE_DYNAMIC_MODULES)
+
+install-data-local: install-settype-modules
+uninstall-local: uninstall-settype-modules
+
+install-settype-modules: dset_settype_modules
+	@$(NORMAL_INSTALL)
+	@list='$(DSET_SETTYPE_DYNAMIC_MODULES)'; \
+	test -n "$(DSET_MODSDIR)" || list=; \
+	list2=; for p in $$list; do \
+		if test -f $$p; then \
+			list2="$$list2 $$p"; \
+		else :; fi; \
+	done; \
+	test -z "$$list2" || { \
+		echo " $(MKDIR_P) '$(DESTDIR)$(DSET_MODSDIR)'"; \
+		$(MKDIR_P) "$(DESTDIR)$(DSET_MODSDIR)" || exit 1; \
+		echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(DSET_MODSDIR)'"; \
+		$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(DSET_MODSDIR)"; \
+	}
+
+uninstall-settype-modules:
+	@$(NORMAL_UNINSTALL)
+	@list='$(DSET_SETTYPE_DYNAMIC_MODULES)'; \
+	test -n "$(DSET_MODSDIR)" || list=; \
+	for p in $$list; do \
+		$(am__strip_dir) \
+		echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(DSET_MODSDIR)/$$f'"; \
+		$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(DSET_MODSDIR)/$$f"; \
+	done
+
+.PHONY: dset_settype_check dset_settype_modules dset_settype_modules-stamp \
+	install-settype-modules uninstall-settype-modules

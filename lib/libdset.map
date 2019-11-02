@@ -1,0 +1,174 @@
+/*
+ * These are library version numbers in here - not to be confused
+ * with the API numbers used with libtool's -version-info string.
+ */
+LIBDSET_1.0 {
+global:
+  dset_strlcpy;
+  dset_data_flags_test;
+  dset_data_flags_set;
+  dset_data_flags_unset;
+  dset_data_ignored;
+  dset_data_set;
+  dset_data_get;
+  dset_data_setname;
+  dset_data_flags;
+  dset_data_reset;
+  dset_data_init;
+  dset_data_fini;
+  dset_data_sizeof;
+  dset_errcode;
+
+  dset_get_nlmsg_type;
+
+
+  dset_parse_domain;
+  
+  dset_parse_name;
+  dset_parse_before;
+  dset_parse_after;
+  dset_parse_setname;
+  dset_parse_uint32;
+  dset_parse_uint8;
+
+  dset_parse_flag;
+  dset_parse_typename;
+
+  dset_parse_output;
+  dset_parse_ignored;
+  dset_parse_elem;
+  dset_call_parser;
+
+  dset_parse_name_compat;
+  
+  dset_print_type;
+  dset_print_domain;
+
+  dset_print_number;
+  dset_print_name;
+  
+  dset_print_flag;
+  dset_print_elem;
+  dset_print_data;
+  dset_session_data;
+  dset_session_handle;
+  dset_saved_type;
+  dset_session_lineno;
+  dset_session_report;
+  dset_session_report_reset;
+  dset_session_error;
+  dset_session_warning;
+  dset_envopt_parse;
+  dset_envopt_test;
+  dset_session_output;
+  dset_commit;
+  dset_cmd;
+  dset_session_init;
+  dset_session_fini;
+  dset_debug_msg;
+  dset_cache_add;
+  dset_cache_del;
+  dset_cache_rename;
+  dset_cache_swap;
+  dset_cache_init;
+  dset_cache_fini;
+  dset_type_get;
+  dset_type_check;
+  dset_type_add;
+  dset_types;
+  dset_typename_resolve;
+  dset_match_typename;
+  dset_match_cmd;
+  dset_match_option;
+  dset_match_envopt;
+  dset_shift_argv;
+
+local: *;
+};
+
+LIBDSET_2.0 {
+global:
+  dset_load_types;
+  dset_parse_timeout;
+  dset_data_test_ignored;
+} LIBDSET_1.0;
+
+LIBDSET_3.0 {
+global:
+  dset_session_outfn;
+} LIBDSET_2.0;
+
+LIBDSET_4.0 {
+global:
+  dset_parse_uint64;
+} LIBDSET_3.0;
+
+LIBDSET_4.1 {
+global:
+  dset_parse_comment;
+  dset_print_comment;
+  dset_strlcat;
+} LIBDSET_4.0;
+
+LIBDSET_4.2 {
+global:
+  dset_parse_mark;
+  dset_print_mark;
+} LIBDSET_4.1;
+
+LIBDSET_4.3 {
+global:
+  dset_parse_skbmark;
+  dset_parse_skbprio;
+  dset_print_skbmark;
+  dset_print_skbprio;
+} LIBDSET_4.2;
+
+LIBDSET_4.4 {
+global:
+  dset_parse_uint16;
+} LIBDSET_4.3;
+
+LIBDSET_4.5 {
+global:
+  dset_type_higher_rev;
+} LIBDSET_4.4;
+
+LIBDSET_4.6 {
+global:
+  dset_keyword;
+} LIBDSET_4.5;
+
+LIBDSET_4.7 {
+global:
+  dset_session_warning_as_error;
+} LIBDSET_4.6;
+
+LIBDSET_4.8 {
+global:
+  dset_parse_filename;
+  dset_session;
+  dset_is_interactive;
+  dset_custom_printf;
+  dset_parse_argv;
+  dset_parse_line;
+  dset_parse_stream;
+  dset_init;
+  dset_fini;
+  dset_session_printf_private;
+  dset_envopt_set;
+  dset_envopt_unset;
+  dset_session_print_outfn;
+  dset_session_io_full;
+  dset_session_io_normal;
+  dset_session_io_stream;
+  dset_session_io_close;
+} LIBDSET_4.7;
+
+LIBDSET_4.9 {
+global:
+  dset_ignored_optname;
+  list_sort;
+  dset_session_report_msg;
+  dset_session_report_type;
+} LIBDSET_4.8;

@@ -1,0 +1,107 @@
+PROTOCOL 8:
+
+req:	msg:	DSET_CMD_PROTOCOL
+	attr:	DSET_ATTR_PROTOCOL
+
+resp:	attr:	DSET_ATTR_PROTOCOL	(protocol max)
+		DSET_ATTR_PROTOCOL_MIN	(protocol min, optional)
+
+req:	msg:	DSET_CMD_CREATE
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME
+		DSET_ATTR_TYPENAME
+		DSET_ATTR_REVISION
+		DSET_ATTR_FAMILY
+		DSET_ATTR_FLAGS
+		DSET_ATTR_DATA
+			create-specific-data
+
+resp:	success/error
+
+req:	msg:	DSET_CMD_DESTROY|DSET_CMD_FLUSH
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME	(optional)
+
+resp:	success/error
+
+req:	msg:	DSET_CMD_SWAP|DSET_CMD_RENAME
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME
+		DSET_ATTR_SETNAME2
+
+resp:	success/error
+
+req:	msg:	DSET_CMD_LIST|SAVE
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME	(optional)
+
+resp:	attr:	DSET_ATTR_SETNAME
+		DSET_ATTR_TYPENAME
+		DSET_ATTR_REVISION
+		DSET_ATTR_FAMILY
+		DSET_ATTR_DATA
+			create-specific-data
+		DSET_ATTR_ADT
+			DSET_ATTR_DATA
+				adt-specific-data
+			...
+
+req:	msg:	DSET_CMD_ADD|DEL
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME
+		DSET_ATTR_FLAGS
+		DSET_ATTR_LINENO	(for reporting error line back too)
+		DSET_ATTR_DATA
+			adt-specific-data
+
+		or
+
+		DSET_ATTR_ADT
+			DSET_ATTR_DATA
+				adt-specific-data
+			...
+
+resp:	success/error
+
+req:	msg:	DSET_CMD_TEST
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME
+		DSET_ATTR_FLAGS
+		DSET_ATTR_DATA
+			adt-specific-data
+
+resp:	success/error
+
+req:	msg:	DSET_CMD_HEADER
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME
+
+resp:	attr:	DSET_ATTR_SETNAME
+		DSET_ATTR_TYPENAME
+		DSET_ATTR_REVISION
+		DSET_ATTR_FAMILY
+
+req:	msg:	DSET_CMD_TYPE
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_TYPENAME
+		DSET_ATTR_FAMILY
+
+resp:	attr:	DSET_ATTR_TYPENAME
+		DSET_ATTR_FAMILY
+		DSET_ATTR_REVISION	(version max)
+		DSET_ATTR_REVISION_MIN	(version min, optional)
+
+PROTOCOL 9: PROTOCOL 8 +
+
+req:	msg:	DSET_CMD_GET_BYNAME
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_SETNAME
+
+resp:	attr:	DSET_ATTR_INDEX
+		DSET_ATTR_FAMILY
+
+req:	msg:	DSET_CMD_GET_BYINDEX
+	attr:	DSET_ATTR_PROTOCOL
+		DSET_ATTR_INDEX
+
+resp:	attr:	DSET_ATTR_SETNAME

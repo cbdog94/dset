@@ -1,0 +1,9 @@
+NOSTDINC_FLAGS += -I$(KDIR)/include
+EXTRA_CFLAGS := -DCONFIG_DOMAIN_SET_MAX=$(DOMAIN_SET_MAX)
+
+obj-m += xt_dset.o
+obj-m += dset/
+
+# It's for me...
+incdirs := $(M) $(KDIR)/include/linux/netfilter $(KDIR)/include/linux/netfilter/dset
+clean-files := $(foreach dir,$(incdirs),$(wildcard $(dir)/*~))
